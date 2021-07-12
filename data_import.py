@@ -112,7 +112,7 @@ def create_db():
                 county TEXT,
                 community TEXT,
                 voivodeship TEXT,
-                community_type INT,
+                community_type INTEGER,
                 teryt TEXT
                 );''')
     conn.execute('''CREATE TABLE IF NOT EXISTS Communities
