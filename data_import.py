@@ -9,6 +9,8 @@ import sqlite3
 import time
 import hashlib
 
+import signal
+
 headers = {
     'sec-ch-ua': '" Not;A Brand";v="99", "Microsoft Edge";v="91", "Chromium";v="91"',
     'Accept': 'application/json, text/javascript, */*; q=0.01',
@@ -74,26 +76,42 @@ class CommunityVaccineData:
         self.full_vaccinated_percent = self.full_vaccinated_amount / self.population
 
 
+run = True
+
+def signal_handler(sig, frame):
+    print('Ctrl-C caught - closing')
+    global run
+    run = False
+
+
 def main():
-    json_resp, timestamp, hash_md5 = get_json()
-    if json_resp is None:
-        return -1
+    signal.signal(signal.SIGINT, signal_handler)
+    while run:
+        json_resp, timestamp, hash_md5 = get_json()
+        if json_resp:
+            voivodeships = {}
+            communities = []
+            for entry in json_resp:
+                if entry['voivodeship'] in voivodeships:
+                    voivodeships[entry['voivodeship']].update(entry)
+                else:
+                    voivodeships[entry['voivodeship']] = VoivodeshipVaccineData(entry)
+                communities.append(CommunityVaccineData(entry))
 
-    voivodeships = {}
-    communities = []
-    for entry in json_resp:
-        if entry['voivodeship'] in voivodeships:
-            voivodeships[entry['voivodeship']].update(entry)
-        else:
-            voivodeships[entry['voivodeship']] = VoivodeshipVaccineData(entry)
-        communities.append(CommunityVaccineData(entry))
+            create_db()
+            if hash_exists(hash_md5):
+                print(f'{timestamp} - nothing to be done - data already in db')
+            else:
+                update_voivodeships(timestamp, voivodeships, hash_md5)
+                update_communities(timestamp, communities)
 
-    create_db()
-    if hash_exists(hash_md5):
-        print(f'{timestamp} - nothing to be done - data already in db')
-        return 0
-    update_voivodeships(timestamp, voivodeships, hash_md5)
-    update_communities(timestamp, communities)
+        print('sleep')
+        for i in range(0,120):
+            if run is False:
+                break
+            #print(f'sleep {i+1}/120')
+            time.sleep(30)
+    print('bye')
 
 def create_db():
     conn = sqlite3.connect(db_name)
