@@ -159,7 +159,7 @@ def update_communities(timestamp, communities):
     for v in communities:
         cursor.execute("SELECT id FROM Communities_info WHERE teryt=:TERYT", {'TERYT': v.teryt})
         result = cursor.fetchone()
-        print(f'{result} - {v.voivodeship} {v.county} {v.community}')
+        #print(f'{result} - {v.voivodeship} {v.county} {v.community}')
         p = (timestamp, result[0], v.population, v.full_vaccinated_amount)
         cursor.execute("INSERT INTO Communities (time,id,population,full_vaccinated_amount) VALUES (?,?,?,?)", p)
 
