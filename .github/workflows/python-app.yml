@@ -6,6 +6,7 @@ name: Update db
 on:
   schedule:
     - cron: '8 * * * *'
+  workflow_dispatch:
 
 jobs:
   build:
