@@ -139,6 +139,8 @@ headers = [
 
 
 def stats(args):
+    output=sys.stdout
+    print('```', file=output)
     timestamps = get_timestamps()
     voivodeships = get_voivodeships()
     v_len = len(max(voivodeships, key=len))
@@ -150,7 +152,7 @@ def stats(args):
     header = v_string.format(headers[0])
     for timestamp in timestamps:
         header += t_string.format(nice_date(timestamp))
-    print(header)
+    print(header, file=output)
 
     # here it is assumed that no new voivodeships will be created ;), and always all will have data
 
@@ -159,7 +161,8 @@ def stats(args):
         out = v_string.format(voivodeship)
         for v in data:
             out += t_string.format(v.percent_string())
-        print(out)
+        print(out, file=output)
+    print('```', file=output)
     return 0
 
 
@@ -171,6 +174,7 @@ def main():
     update_ap.add_argument('-c', '--continuous', action='store_true', help='runs update periodically - ctrl-c to stop')
     update_ap.set_defaults(func=update)
     stats_ap = sub.add_parser('stats', help='prints stats')
+    stats_ap.add_argument('-o', '--output', type=str, default=None, help='output stats to a file')
     stats_ap.set_defaults(func=stats)
 
     args = ap.parse_args()
