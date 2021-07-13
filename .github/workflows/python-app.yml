@@ -25,7 +25,7 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Update db
       run: |
-        python vaccination_level.py update && python vaccination_level.py stats -m -o README.md
+        python vaccination_level.py update && python vaccination_level.py stats -m -o README.md || echo done
     - uses: stefanzweifel/git-auto-commit-action@v4
       with:
         commit_message: db update
