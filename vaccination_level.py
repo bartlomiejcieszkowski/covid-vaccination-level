@@ -10,6 +10,7 @@ import time
 import hashlib
 
 import signal
+import argparse
 
 headers = {
     'sec-ch-ua': '" Not;A Brand";v="99", "Microsoft Edge";v="91", "Chromium";v="91"',
@@ -83,35 +84,61 @@ def signal_handler(sig, frame):
     global run
     run = False
 
+def update_db():
+    json_resp, timestamp, hash_md5 = get_json()
+    if json_resp:
+        voivodeships = {}
+        communities = []
+        for entry in json_resp:
+            if entry['voivodeship'] in voivodeships:
+                voivodeships[entry['voivodeship']].update(entry)
+            else:
+                voivodeships[entry['voivodeship']] = VoivodeshipVaccineData(entry)
+            communities.append(CommunityVaccineData(entry))
+
+        create_db()
+        if hash_exists(hash_md5):
+            print(f'{timestamp} - nothing to be done - data already in db')
+        else:
+            update_voivodeships(timestamp, voivodeships, hash_md5)
+            update_communities(timestamp, communities)
+
+
+def update(args):
+    if args.continuous is False:
+        update_db()
+    else:
+        signal.signal(signal.SIGINT, signal_handler)
+        while run:
+            update_db()
+            print('sleep')
+            for i in range(0, 120):
+                if run is False:
+                    break
+                # print(f'sleep {i+1}/120')
+                time.sleep(30)
+
+    print('bye')
+    return 0
+
+
+def stats(args):
+    pass
+
 
 def main():
-    signal.signal(signal.SIGINT, signal_handler)
-    while run:
-        json_resp, timestamp, hash_md5 = get_json()
-        if json_resp:
-            voivodeships = {}
-            communities = []
-            for entry in json_resp:
-                if entry['voivodeship'] in voivodeships:
-                    voivodeships[entry['voivodeship']].update(entry)
-                else:
-                    voivodeships[entry['voivodeship']] = VoivodeshipVaccineData(entry)
-                communities.append(CommunityVaccineData(entry))
+    ap = argparse.ArgumentParser()
+    ap.add_argument('-v', '--verbose', action='count', help='verbose output')
+    sub = ap.add_subparsers()
+    update_ap = sub.add_parser('update', help='updates db')
+    update_ap.add_argument('-c', '--continuous', action='store_true', help='runs update periodically - ctrl-c to stop')
+    update_ap.set_defaults(func=update)
+    stats_ap = sub.add_parser('stats', help='prints stats')
+    stats_ap.set_defaults(func=stats)
 
-            create_db()
-            if hash_exists(hash_md5):
-                print(f'{timestamp} - nothing to be done - data already in db')
-            else:
-                update_voivodeships(timestamp, voivodeships, hash_md5)
-                update_communities(timestamp, communities)
+    args = ap.parse_args()
+    return args.func(args)
 
-        print('sleep')
-        for i in range(0,120):
-            if run is False:
-                break
-            #print(f'sleep {i+1}/120')
-            time.sleep(30)
-    print('bye')
 
 def create_db():
     conn = sqlite3.connect(db_name)
