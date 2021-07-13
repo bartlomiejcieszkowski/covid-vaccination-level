@@ -5,7 +5,7 @@ name: Update db
 
 on:
   schedule:
-    - cron: '8 * * * *'
+    - cron: '8 */3 * * *'
   workflow_dispatch:
 
 jobs:
