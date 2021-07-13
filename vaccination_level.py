@@ -12,6 +12,8 @@ import hashlib
 import signal
 import argparse
 
+from datetime import datetime
+
 headers = {
     'sec-ch-ua': '" Not;A Brand";v="99", "Microsoft Edge";v="91", "Chromium";v="91"',
     'Accept': 'application/json, text/javascript, */*; q=0.01',
@@ -42,21 +44,28 @@ def get_json():
 
     hash_md5 = hashlib.md5(response.text.encode())
 
-    return response.json(), timestamp, hash_md5.hexdigest()
+    return response.json(), int(timestamp), hash_md5.hexdigest()
+
+
+def nice_date(timestamp: int):
+    return datetime.utcfromtimestamp(timestamp).strftime('%Y/%m/%d')
 
 
 class VoivodeshipVaccineData:
-    def __init__(self, json_entry):
-        self.voivodeship = json_entry['voivodeship'].translate(repl)
-        self.population = 0
-        self.full_vaccinated_amount = 0
-        self.full_vaccinated_percent = 0
-        self.update(json_entry)
+    def __init__(self, timestamp: int, voivodeship: str, population: int, full_vaccinated_amount: int):
+        self.timestamp = timestamp
+        self.voivodeship = voivodeship
+        self.population = population
+        self.full_vaccinated_amount = full_vaccinated_amount
+        self.full_vaccinated_percent = self.full_vaccinated_amount / self.population
 
     def update(self, json_entry):
         self.population += json_entry['population']
         self.full_vaccinated_amount += json_entry['full_vaccinated_amount']
         self.full_vaccinated_percent = self.full_vaccinated_amount / self.population
+
+    def percent_string(self):
+        return '{:.4f}%'.format(self.full_vaccinated_percent * 100)
 
 
 class CommunityVaccineData:
@@ -79,10 +88,12 @@ class CommunityVaccineData:
 
 run = True
 
+
 def signal_handler(sig, frame):
     print('Ctrl-C caught - closing')
     global run
     run = False
+
 
 def update_db():
     json_resp, timestamp, hash_md5 = get_json()
@@ -90,10 +101,11 @@ def update_db():
         voivodeships = {}
         communities = []
         for entry in json_resp:
-            if entry['voivodeship'] in voivodeships:
-                voivodeships[entry['voivodeship']].update(entry)
+            v = entry['voivodeship'].translate(repl)
+            if v in voivodeships:
+                voivodeships[v].update(entry)
             else:
-                voivodeships[entry['voivodeship']] = VoivodeshipVaccineData(entry)
+                voivodeships[v] = VoivodeshipVaccineData(timestamp, v, entry['population'], entry['full_vaccinated_amount'])
             communities.append(CommunityVaccineData(entry))
 
         create_db()
@@ -121,9 +133,34 @@ def update(args):
     print('bye')
     return 0
 
+headers = [
+    'WOJEWODZTWO'
+]
+
 
 def stats(args):
-    pass
+    timestamps = get_timestamps()
+    voivodeships = get_voivodeships()
+    v_len = len(max(voivodeships, key=len))
+    d_len = len(nice_date(0))
+    v_string = '{:' + str(v_len) + 's} '
+    t_string = '{:>' + str(d_len) + 's} '
+
+    # create table header
+    header = v_string.format(headers[0])
+    for timestamp in timestamps:
+        header += t_string.format(nice_date(timestamp))
+    print(header)
+
+    # here it is assumed that no new voivodeships will be created ;), and always all will have data
+
+    for voivodeship in voivodeships:
+        data = get_voivodeship_data(voivodeship)
+        out = v_string.format(voivodeship)
+        for v in data:
+            out += t_string.format(v.percent_string())
+        print(out)
+    return 0
 
 
 def main():
@@ -169,12 +206,12 @@ def create_db():
     conn.commit()
     conn.close()
 
-def update_communities(timestamp, communities):
+
+def update_communities(timestamp: int, communities):
     conn = sqlite3.connect(db_name)
     cursor = conn.cursor()
 
-    print(f'{timestamp} -> {int(timestamp)}')
-    timestamp = int(timestamp)
+    print(f'{timestamp}')
 
     # Update Communities table - should be done once only
 
@@ -213,8 +250,6 @@ def update_voivodeships(timestamp, voivodeships, hash_md5):
     conn = sqlite3.connect(db_name)
     cursor = conn.cursor()
 
-    print(f'{timestamp} -> {int(timestamp)}')
-    timestamp = int(timestamp)
     p = (timestamp,hash_md5)
 
     cursor.execute('REPLACE INTO Timestamps (time,hash_md5) VALUES (?,?)', p)
@@ -226,6 +261,39 @@ def update_voivodeships(timestamp, voivodeships, hash_md5):
     conn.commit()
     print(f'{timestamp} - counties - insert done')
     conn.close()
+
+
+def get_voivodeships():
+    conn = sqlite3.connect(db_name)
+    cursor = conn.cursor()
+    cursor.execute('SELECT DISTINCT voivodeship FROM Voivodeships ORDER BY voivodeship')
+    results = cursor.fetchall()
+    out = list(map(lambda x: x[0], results))
+    conn.close()
+    return out
+
+
+def get_timestamps():
+    conn = sqlite3.connect(db_name)
+    cursor = conn.cursor()
+    cursor.execute('SELECT DISTINCT time FROM Timestamps ORDER BY time ASC')
+    results = cursor.fetchall()
+    out = list(map(lambda x: x[0], results))
+    conn.close()
+    return out
+
+
+def get_voivodeship_data(voivodeship: str):
+    out = []
+    conn = sqlite3.connect(db_name)
+    cursor = conn.cursor()
+    cursor.execute('SELECT time,voivodeship,population,full_vaccinated_amount FROM Voivodeships WHERE voivodeship=:NAME ORDER BY time ASC', {'NAME': voivodeship})
+    entry = cursor.fetchone()
+    while entry:
+        out.append(VoivodeshipVaccineData(timestamp=entry[0], voivodeship=entry[1], population=entry[2], full_vaccinated_amount=entry[3]))
+        entry = cursor.fetchone()
+    conn.close()
+    return out
 
 
 if __name__ == "__main__":
