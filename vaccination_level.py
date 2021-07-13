@@ -35,6 +35,7 @@ repl = str.maketrans(
     "acelnoszzACELNOSZZ"
 )
 
+
 def get_json():
     timestamp = time.time()
     response = requests.get('https://www.gov.pl/api/data/covid-vaccination-contest/results-details', headers=headers, params=params)
@@ -133,7 +134,7 @@ def update(args):
     print('bye')
     return 0
 
-headers = [
+headers_table = [
     'WOJEWODZTWO'
 ]
 
@@ -149,7 +150,7 @@ def stats(args):
     t_string = '{:>' + str(d_len) + 's} '
 
     # create table header
-    header = v_string.format(headers[0])
+    header = v_string.format(headers_table[0])
     for timestamp in timestamps:
         header += t_string.format(nice_date(timestamp))
     print(header, file=output)
