@@ -112,14 +112,15 @@ def update_db():
         create_db()
         if hash_exists(hash_md5):
             print(f'{timestamp} - nothing to be done - data already in db')
+            return -1
         else:
             update_voivodeships(timestamp, voivodeships, hash_md5)
             update_communities(timestamp, communities)
-
+    return 0
 
 def update(args):
     if args.continuous is False:
-        update_db()
+        return update_db()
     else:
         signal.signal(signal.SIGINT, signal_handler)
         while run:
@@ -138,10 +139,19 @@ headers_table = [
     'WOJEWODZTWO'
 ]
 
+from pathlib import Path
 
 def stats(args):
     output=sys.stdout
-    print('```', file=output)
+    if args.output:
+        path = Path(args.output)
+        if path.exists() == False or path.is_file():
+            output = path.open('w')
+    if args.md:
+        print('# Archiwum statystyk https://www.gov.pl/web/szczepienia-gmin', file=output)
+        print('', file=output)
+        print('```', file=output)
+
     timestamps = get_timestamps()
     voivodeships = get_voivodeships()
     v_len = len(max(voivodeships, key=len))
@@ -163,7 +173,11 @@ def stats(args):
         for v in data:
             out += t_string.format(v.percent_string())
         print(out, file=output)
-    print('```', file=output)
+    if args.md:
+        print('```', file=output)
+
+    if output != sys.stdout:
+        output.close()
     return 0
 
 
@@ -175,6 +189,7 @@ def main():
     update_ap.add_argument('-c', '--continuous', action='store_true', help='runs update periodically - ctrl-c to stop')
     update_ap.set_defaults(func=update)
     stats_ap = sub.add_parser('stats', help='prints stats')
+    stats_ap.add_argument('-m', '--md', action='store_true', help='adds md headers')
     stats_ap.add_argument('-o', '--output', type=str, default=None, help='output stats to a file')
     stats_ap.set_defaults(func=stats)
 
