@@ -21,7 +21,7 @@ jobs:
         python-version: 3.9
     - name: Update db
       run: |
-        vaccination_level.py update
+        python vaccination_level.py update
     - uses: stefanzweifel/git-auto-commit-action@v4
       with:
         commit_message: db update
