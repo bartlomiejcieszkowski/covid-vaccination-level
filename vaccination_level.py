@@ -156,14 +156,17 @@ def stats(args):
     voivodeships = get_voivodeships()
     v_len = len(max(voivodeships, key=len))
     d_len = len(nice_date(0))
-    v_string = '{:' + str(v_len) + 's} '
-    t_string = '{:>' + str(d_len) + 's} '
+    v_string = '{:' + str(v_len) + 's} | '
+    t_string = '{:>' + str(d_len) + 's} | '
 
     # create table header
     header = v_string.format(headers_table[0])
     for timestamp in timestamps:
         header += t_string.format(nice_date(timestamp))
     print(header, file=output)
+    table_width = len(header)
+    line_separator = '-' * table_width
+    print(line_separator)
 
     # here it is assumed that no new voivodeships will be created ;), and always all will have data
 
@@ -173,6 +176,8 @@ def stats(args):
         for v in data:
             out += t_string.format(v.percent_string())
         print(out, file=output)
+
+    print(line_separator)
     if args.md:
         print('```', file=output)
 
