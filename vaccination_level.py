@@ -60,9 +60,9 @@ class VoivodeshipVaccineData:
         self.full_vaccinated_amount = full_vaccinated_amount
         self.full_vaccinated_percent = self.full_vaccinated_amount / self.population
 
-    def update(self, json_entry):
-        self.population += json_entry['population']
-        self.full_vaccinated_amount += json_entry['full_vaccinated_amount']
+    def update(self, population: int, full_vaccinated_amount: int):
+        self.population += population
+        self.full_vaccinated_amount += full_vaccinated_amount
         self.full_vaccinated_percent = self.full_vaccinated_amount / self.population
 
     def percent_string(self):
@@ -104,7 +104,7 @@ def update_db():
         for entry in json_resp:
             v = entry['voivodeship'].translate(repl)
             if v in voivodeships:
-                voivodeships[v].update(entry)
+                voivodeships[v].update(entry['population'], entry['full_vaccinated_amount'])
             else:
                 voivodeships[v] = VoivodeshipVaccineData(timestamp, v, entry['population'], entry['full_vaccinated_amount'])
             communities.append(CommunityVaccineData(entry))
@@ -170,14 +170,29 @@ def stats(args):
 
     # here it is assumed that no new voivodeships will be created ;), and always all will have data
 
-    for voivodeship in voivodeships:
-        data = get_voivodeship_data(voivodeship)
-        out = v_string.format(voivodeship)
-        for v in data:
+    if len(voivodeships) > 0:
+        master_data = get_voivodeship_data(voivodeships[0])
+        out = v_string.format(voivodeships[0])
+
+        for v in master_data:
             out += t_string.format(v.percent_string())
         print(out, file=output)
 
+        for i in range(1, len(voivodeships)):
+            data = get_voivodeship_data(voivodeships[i])
+            out = v_string.format(voivodeships[i])
+            for i in range(0, len(data)):
+                out += t_string.format(data[i].percent_string())
+                master_data[i].update(data[i].population, data[i].full_vaccinated_amount)
+            print(out, file=output)
+
     print(line_separator)
+
+    out = v_string.format('POLSKA')
+    for v in master_data:
+        out += t_string.format(v.percent_string())
+    print(out, file=output)
+
     if args.md:
         print('```', file=output)
 
