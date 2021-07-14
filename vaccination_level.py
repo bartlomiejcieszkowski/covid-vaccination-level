@@ -12,7 +12,9 @@ import hashlib
 import signal
 import argparse
 
-from datetime import datetime
+from datetime import datetime, date, timedelta
+
+import math
 
 headers = {
     'sec-ch-ua': '" Not;A Brand";v="99", "Microsoft Edge";v="91", "Chromium";v="91"',
@@ -48,8 +50,11 @@ def get_json():
     return response.json(), int(timestamp), hash_md5.hexdigest()
 
 
+def timestamp_to_utcdatetime(timestamp):
+    return datetime.utcfromtimestamp(timestamp)
+
 def nice_date(timestamp: int):
-    return datetime.utcfromtimestamp(timestamp).strftime('%Y/%m/%d')
+    return timestamp_to_utcdatetime(timestamp).strftime('%Y/%m/%d')
 
 
 class VoivodeshipVaccineData:
@@ -141,6 +146,21 @@ headers_table = [
 
 from pathlib import Path
 
+herd_immunity = 70.0
+
+def when_herd_immunity(start, end):
+    delta_percent = (end.full_vaccinated_percent * 100) - (start.full_vaccinated_percent * 100)
+    timestamp_to_utcdatetime(end.timestamp).date()
+    delta_days = (timestamp_to_utcdatetime(end.timestamp).date() - timestamp_to_utcdatetime(start.timestamp).date()).days
+
+    daily_increase_average = delta_percent / delta_days
+
+    percent_required = herd_immunity - (end.full_vaccinated_percent * 100)
+    days_to_herd_immunity = int(math.ceil(percent_required / daily_increase_average))
+    herd_immunity_date = timestamp_to_utcdatetime(end.timestamp).date() + timedelta(days=days_to_herd_immunity)
+    return daily_increase_average, herd_immunity_date, days_to_herd_immunity
+
+
 def stats(args):
     output=sys.stdout
     if args.output:
@@ -158,11 +178,13 @@ def stats(args):
     d_len = len(nice_date(0))
     v_string = '{:' + str(v_len) + 's} | '
     t_string = '{:>' + str(d_len) + 's} | '
+    herd_string = '{:.4f}%/dzien | {:>3s} dni | {:>' + str(d_len) + 's}'
 
     # create table header
     header = v_string.format(headers_table[0])
     for timestamp in timestamps:
         header += t_string.format(nice_date(timestamp))
+    header += '     KIEDY ODPORNOSC STADNA {:.0f}%     '.format(herd_immunity)
     print(header, file=output)
     table_width = len(header)
     line_separator = '-' * table_width
@@ -176,6 +198,8 @@ def stats(args):
 
         for v in master_data:
             out += t_string.format(v.percent_string())
+        daily_increase_average, herd_immunity_date, days_to_herd_immunity = when_herd_immunity(master_data[0], master_data[-1])
+        out += herd_string.format(daily_increase_average, str(days_to_herd_immunity), herd_immunity_date.strftime('%Y/%m/%d'))
         print(out, file=output)
 
         for i in range(1, len(voivodeships)):
@@ -184,6 +208,8 @@ def stats(args):
             for i in range(0, len(data)):
                 out += t_string.format(data[i].percent_string())
                 master_data[i].update(data[i].population, data[i].full_vaccinated_amount)
+            daily_increase_average, herd_immunity_date, days_to_herd_immunity = when_herd_immunity(data[0], data[-1])
+            out += herd_string.format(daily_increase_average, str(days_to_herd_immunity), herd_immunity_date.strftime('%Y/%m/%d'))
             print(out, file=output)
 
     print(line_separator, file=output)
@@ -191,6 +217,9 @@ def stats(args):
     out = v_string.format('POLSKA')
     for v in master_data:
         out += t_string.format(v.percent_string())
+    daily_increase_average, herd_immunity_date, days_to_herd_immunity = when_herd_immunity(master_data[0], master_data[-1])
+    out += herd_string.format(daily_increase_average, str(days_to_herd_immunity), herd_immunity_date.strftime('%Y/%m/%d'))
+
     print(out, file=output)
 
     if args.md:
