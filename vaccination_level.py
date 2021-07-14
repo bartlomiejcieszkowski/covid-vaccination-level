@@ -166,7 +166,7 @@ def stats(args):
     print(header, file=output)
     table_width = len(header)
     line_separator = '-' * table_width
-    print(line_separator)
+    print(line_separator, file=output)
 
     # here it is assumed that no new voivodeships will be created ;), and always all will have data
 
@@ -186,7 +186,7 @@ def stats(args):
                 master_data[i].update(data[i].population, data[i].full_vaccinated_amount)
             print(out, file=output)
 
-    print(line_separator)
+    print(line_separator, file=output)
 
     out = v_string.format('POLSKA')
     for v in master_data:
