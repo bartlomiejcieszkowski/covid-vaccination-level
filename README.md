@@ -1,4 +1,4 @@
-# Archiwum statystyk https://www.gov.pl/web/szczepienia-gmin
+# Opracowanie na podstawie danych z https://www.gov.pl/web/szczepienia-gmin
 
 ```
 WOJEWODZTWO         |      KIEDY ODPORNOSC STADNA 70%     

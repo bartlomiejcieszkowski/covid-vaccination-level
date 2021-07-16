@@ -168,7 +168,7 @@ def stats(args):
         if path.exists() == False or path.is_file():
             output = path.open('w')
     if args.md:
-        print('# Archiwum statystyk https://www.gov.pl/web/szczepienia-gmin', file=output)
+        print('# Opracowanie na podstawie danych z https://www.gov.pl/web/szczepienia-gmin', file=output)
         print('', file=output)
         print('```', file=output)
 
@@ -265,10 +265,6 @@ def stats(args):
 
     if args.md:
         print('```', file=output)
-
-    if args.output:
-        output.seek(0)
-        print('DUPA', file=output)
 
     if output != sys.stdout:
         output.close()
