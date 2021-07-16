@@ -180,50 +180,95 @@ def stats(args):
     t_string = '{:>' + str(d_len) + 's} | '
     herd_string = '{:.4f}%/dzien | {:>3s} dni | {:>' + str(d_len) + 's}'
 
+    herd_immunity_lines = []
+    stats_lines = []
+    desc_lines = []
+
     # create table header
     header = v_string.format(headers_table[0])
+    desc_lines.append(header)
+    desc_len = len(header)
+    header = ''
     for timestamp in timestamps:
         header += t_string.format(nice_date(timestamp))
-    header += '     KIEDY ODPORNOSC STADNA {:.0f}%     '.format(herd_immunity)
-    print(header, file=output)
-    table_width = len(header)
-    line_separator = '-' * table_width
-    print(line_separator, file=output)
+    stats_len = len(header)
+    stats_lines.append(header)
+    header = '     KIEDY ODPORNOSC STADNA {:.0f}%     '.format(herd_immunity)
+    herd_immunity_len = len(header)
+    herd_immunity_lines.append(header)
+    header = ''
+    #print(header, file=output)
+    desc_line_separator = '-' * desc_len
+    stats_line_separator = '-' * stats_len
+    herd_immunity_line_separator = '-' * herd_immunity_len
+
+    desc_lines.append(desc_line_separator)
+    stats_lines.append(stats_line_separator)
+    herd_immunity_lines.append('-' * herd_immunity_len)
 
     # here it is assumed that no new voivodeships will be created ;), and always all will have data
+
+    off = 2 # header + separator
 
     if len(voivodeships) > 0:
         master_data = get_voivodeship_data(voivodeships[0])
         out = v_string.format(voivodeships[0])
 
+        desc_lines.append(out)
+        herd_immunity_lines.append('')
+        stats_lines.append('')
+
         for v in master_data:
-            out += t_string.format(v.percent_string())
+            stats_lines[0+off] += t_string.format(v.percent_string())
         daily_increase_average, herd_immunity_date, days_to_herd_immunity = when_herd_immunity(master_data[0], master_data[-1])
-        out += herd_string.format(daily_increase_average, str(days_to_herd_immunity), herd_immunity_date.strftime('%Y/%m/%d'))
-        print(out, file=output)
+        herd_immunity_lines[0+off] += herd_string.format(daily_increase_average, str(days_to_herd_immunity), herd_immunity_date.strftime('%Y/%m/%d'))
+        #print(out, file=output)
 
         for i in range(1, len(voivodeships)):
             data = get_voivodeship_data(voivodeships[i])
             out = v_string.format(voivodeships[i])
-            for i in range(0, len(data)):
-                out += t_string.format(data[i].percent_string())
-                master_data[i].update(data[i].population, data[i].full_vaccinated_amount)
+
+            desc_lines.append(out)
+            herd_immunity_lines.append('')
+            stats_lines.append('')
+
+            for j in range(0, len(data)):
+                stats_lines[i+off] += t_string.format(data[j].percent_string())
+                master_data[j].update(data[j].population, data[j].full_vaccinated_amount)
             daily_increase_average, herd_immunity_date, days_to_herd_immunity = when_herd_immunity(data[0], data[-1])
-            out += herd_string.format(daily_increase_average, str(days_to_herd_immunity), herd_immunity_date.strftime('%Y/%m/%d'))
-            print(out, file=output)
+            herd_immunity_lines[i+off] += herd_string.format(daily_increase_average, str(days_to_herd_immunity), herd_immunity_date.strftime('%Y/%m/%d'))
+            #print(out, file=output)
 
-    print(line_separator, file=output)
+    desc_lines.append(desc_line_separator)
+    stats_lines.append(stats_line_separator)
+    herd_immunity_lines.append(herd_immunity_line_separator)
+    #print(line_separator, file=output)
 
-    out = v_string.format('POLSKA')
+    desc_lines.append(v_string.format('POLSKA'))
+    stats_lines.append('')
+    herd_immunity_lines.append('')
+
     for v in master_data:
-        out += t_string.format(v.percent_string())
+        stats_lines[-1] += t_string.format(v.percent_string())
     daily_increase_average, herd_immunity_date, days_to_herd_immunity = when_herd_immunity(master_data[0], master_data[-1])
-    out += herd_string.format(daily_increase_average, str(days_to_herd_immunity), herd_immunity_date.strftime('%Y/%m/%d'))
+    herd_immunity_lines[-1] += herd_string.format(daily_increase_average, str(days_to_herd_immunity), herd_immunity_date.strftime('%Y/%m/%d'))
 
-    print(out, file=output)
+    #print(out, file=output)
+
+    for i in range(0, len(herd_immunity_lines)):
+        print(f"{desc_lines[i]}{herd_immunity_lines[i]}", file=output)
+
+    print('', file=output)
+
+    for i in range(0, len(stats_lines)):
+        print(f"{desc_lines[i]}{stats_lines[i]}", file=output)
 
     if args.md:
         print('```', file=output)
+
+    if args.output:
+        output.seek(0)
+        print('DUPA', file=output)
 
     if output != sys.stdout:
         output.close()
