@@ -283,7 +283,7 @@ def stats(args):
     daily_increase_average, herd_immunity_date, days_to_herd_immunity = when_herd_immunity(master_data[0], master_data[-1])
     herd_immunity_lines[-1] += herd_string.format(daily_increase_average, str(days_to_herd_immunity), herd_immunity_date.strftime('%Y/%m/%d'))
 
-    plot_data.append(plot_entry)
+    plot_data.insert(0, plot_entry)
 
     #print(out, file=output)
 
@@ -295,7 +295,7 @@ def stats(args):
     for i in range(0, len(stats_lines)):
         print(f"{desc_lines[i]}{stats_lines[i]}", file=output)
 
-    chart_list = generate_chart('level', 'Procent zaszczepionych', plot_data)
+    chart_list = generate_chart('level', f'({plot_dates[-1]}) Procent zaszczepionych w Polsce', plot_data)
     for chart in chart_list:
         print(chart, file=output)
 
@@ -456,18 +456,32 @@ def generate_chart(filename: str, decription: str, charts_data: PlotData):
         print(f'{ex}', file=sys.stderr)
         return output
 
+    line_styles = [
+        None,
+        'dot',
+        'dash',
+        'dashdot'
+    ]
+    color_count = 10
+
+
     fig = go.Figure()
     fig.update_yaxes(tickformat="%")
     fig.update_xaxes(dtick="D1")
-    fig.update_layout(width=1000, height=1000)
+    fig.update_layout(width=1500, height=1000, title=decription)
+
+    idx = 0
     for chart in charts_data:
-        fig.add_trace(go.Scatter(x=chart.x, y=chart.y, mode='lines+markers', name=chart.name))
+        fig.add_trace(go.Scatter(x=chart.x, y=chart.y, mode='lines+markers', name=chart.name, line=dict(dash=line_styles[idx // color_count])))
+        idx += 1
 
     fig_path = chart_dir_path / f'{filename}.svg'
 
 
     fig.write_image(fig_path)
+    output.append('')
     output.append(f'![{decription}](/{fig_path.as_posix()})')
+    output.append('')
 
     return output
 
