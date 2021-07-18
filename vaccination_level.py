@@ -92,6 +92,13 @@ class CommunityVaccineData:
         self.full_vaccinated_percent = self.full_vaccinated_amount / self.population
 
 
+class PlotData:
+    def __init__(self):
+        self.name = ""
+        self.x = []
+        self.y = []
+
+
 run = True
 
 
@@ -162,6 +169,9 @@ def when_herd_immunity(start, end):
 
 
 def stats(args):
+    plot_dates = []
+    plot_data = []
+
     output=sys.stdout
     if args.output:
         path = Path(args.output)
@@ -190,7 +200,9 @@ def stats(args):
     desc_len = len(header)
     header = ''
     for timestamp in timestamps:
-        header += t_string.format(nice_date(timestamp))
+        nice_timestamp = nice_date(timestamp)
+        header += t_string.format(nice_timestamp)
+        plot_dates.append(nice_timestamp)
     stats_len = len(header)
     stats_lines.append(header)
     header = '     KIEDY ODPORNOSC STADNA {:.0f}%     '.format(herd_immunity)
@@ -211,6 +223,10 @@ def stats(args):
     off = 2 # header + separator
 
     if len(voivodeships) > 0:
+        plot_entry = PlotData()
+        plot_entry.name = voivodeships[0]
+        plot_entry.x = plot_dates
+
         master_data = get_voivodeship_data(voivodeships[0])
         out = v_string.format(voivodeships[0])
 
@@ -220,11 +236,18 @@ def stats(args):
 
         for v in master_data:
             stats_lines[0+off] += t_string.format(v.percent_string())
+            plot_entry.y.append(v.full_vaccinated_percent)
         daily_increase_average, herd_immunity_date, days_to_herd_immunity = when_herd_immunity(master_data[0], master_data[-1])
         herd_immunity_lines[0+off] += herd_string.format(daily_increase_average, str(days_to_herd_immunity), herd_immunity_date.strftime('%Y/%m/%d'))
         #print(out, file=output)
 
+        plot_data.append(plot_entry)
+
         for i in range(1, len(voivodeships)):
+            plot_entry = PlotData()
+            plot_entry.name = voivodeships[i]
+            plot_entry.x = plot_dates
+
             data = get_voivodeship_data(voivodeships[i])
             out = v_string.format(voivodeships[i])
 
@@ -234,10 +257,12 @@ def stats(args):
 
             for j in range(0, len(data)):
                 stats_lines[i+off] += t_string.format(data[j].percent_string())
+                plot_entry.y.append(data[j].full_vaccinated_percent)
                 master_data[j].update(data[j].population, data[j].full_vaccinated_amount)
             daily_increase_average, herd_immunity_date, days_to_herd_immunity = when_herd_immunity(data[0], data[-1])
             herd_immunity_lines[i+off] += herd_string.format(daily_increase_average, str(days_to_herd_immunity), herd_immunity_date.strftime('%Y/%m/%d'))
             #print(out, file=output)
+            plot_data.append(plot_entry)
 
     desc_lines.append(desc_line_separator)
     stats_lines.append(stats_line_separator)
@@ -248,10 +273,17 @@ def stats(args):
     stats_lines.append('')
     herd_immunity_lines.append('')
 
+    plot_entry = PlotData()
+    plot_entry.name = 'POLSKA'
+    plot_entry.x = plot_dates
+
     for v in master_data:
         stats_lines[-1] += t_string.format(v.percent_string())
+        plot_entry.y.append(v.full_vaccinated_percent)
     daily_increase_average, herd_immunity_date, days_to_herd_immunity = when_herd_immunity(master_data[0], master_data[-1])
     herd_immunity_lines[-1] += herd_string.format(daily_increase_average, str(days_to_herd_immunity), herd_immunity_date.strftime('%Y/%m/%d'))
+
+    plot_data.append(plot_entry)
 
     #print(out, file=output)
 
@@ -262,6 +294,10 @@ def stats(args):
 
     for i in range(0, len(stats_lines)):
         print(f"{desc_lines[i]}{stats_lines[i]}", file=output)
+
+    chart_list = generate_chart('level', 'Procent zaszczepionych', plot_data)
+    for chart in chart_list:
+        print(chart, file=output)
 
     if args.md:
         print('```', file=output)
@@ -404,6 +440,36 @@ def get_voivodeship_data(voivodeship: str):
         entry = cursor.fetchone()
     conn.close()
     return out
+
+
+import plotly.graph_objects as go
+
+
+def generate_chart(filename: str, decription: str, charts_data: PlotData):
+    output = []
+
+    chart_dir_name = "charts"
+    chart_dir_path = Path(chart_dir_name)
+    try:
+        chart_dir_path.mkdir(parents=True, exist_ok=True)
+    except FileExistsError as ex:
+        print(f'{ex}', file=sys.stderr)
+        return output
+
+    fig = go.Figure()
+    fig.update_yaxes(tickformat="%")
+    fig.update_xaxes(dtick="D1")
+    fig.update_layout(width=1000, height=1000)
+    for chart in charts_data:
+        fig.add_trace(go.Scatter(x=chart.x, y=chart.y, mode='lines+markers', name=chart.name))
+
+    fig_path = chart_dir_path / f'{filename}.svg'
+
+
+    fig.write_image(fig_path)
+    output.append(f'![{decription}](/{fig_path.as_posix()})')
+
+    return output
 
 
 if __name__ == "__main__":
