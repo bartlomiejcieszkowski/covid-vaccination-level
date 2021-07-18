@@ -295,12 +295,14 @@ def stats(args):
     for i in range(0, len(stats_lines)):
         print(f"{desc_lines[i]}{stats_lines[i]}", file=output)
 
+    if args.md:
+        print('```', file=output)
+
     chart_list = generate_chart('level', f'({plot_dates[-1]}) Procent zaszczepionych w Polsce', plot_data)
     for chart in chart_list:
         print(chart, file=output)
 
-    if args.md:
-        print('```', file=output)
+
 
     if output != sys.stdout:
         output.close()
