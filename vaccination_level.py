@@ -480,7 +480,7 @@ def generate_chart(filename: str, decription: str, charts_data: PlotData):
 
     fig.write_image(fig_path)
     output.append('')
-    output.append(f'![{decription}](/{chart_dir_name}/{filename}.svg)')
+    output.append(f'![{decription}](../{chart_dir_name}/{filename}.svg)')
     output.append('')
 
     return output
