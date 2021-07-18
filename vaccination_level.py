@@ -445,7 +445,7 @@ def get_voivodeship_data(voivodeship: str):
 
 
 import plotly.graph_objects as go
-
+from lxml import etree
 
 def generate_chart(filename: str, decription: str, charts_data: PlotData):
     output = []
@@ -481,6 +481,12 @@ def generate_chart(filename: str, decription: str, charts_data: PlotData):
 
 
     fig.write_image(fig_path)
+
+    # plotly and kaleido when regenerating svg insert different id
+    # pretty print xml, so the diff looks reasonable
+    et = etree.parse(str(fig_path))
+    et.write(str(fig_path), pretty_print=True)
+
     output.append('')
     output.append(f'![{decription}]({chart_dir_name}/{filename}.svg)')
     output.append('')
