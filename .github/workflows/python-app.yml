@@ -30,7 +30,7 @@ jobs:
       with:
         commit_message: db update
         commit_options: '--no-verify --signoff'
-        file_pattern: '*.db *.md'
+        file_pattern: '*.db *.md *.svg'
         repository: .
         add_options: '-u'
         disable_globbing: true
