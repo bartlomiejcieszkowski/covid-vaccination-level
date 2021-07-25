@@ -1,5 +1,8 @@
 # Opracowanie na podstawie danych z https://www.gov.pl/web/szczepienia-gmin
 
+
+![(2021-07-24) Procent zaszczepionych w Polsce](charts/level.svg)
+
 ```
 WOJEWODZTWO         |      KIEDY ODPORNOSC STADNA 70%     
 ----------------------------------------------------------
@@ -43,6 +46,3 @@ ZACHODNIOPOMORSKIE  |   40.5365% |   40.7623% |   41.1608% |   42.1763% |   42.6
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 POLSKA              |   39.3873% |   39.6262% |   40.0528% |   41.2269% |   41.7134% |   42.0630% |   42.1672% |   42.3302% |   42.6427% |   43.0561% |   43.8063% | 
 ```
-
-![(2021/07/24) Procent zaszczepionych w Polsce](charts/level.svg)
-

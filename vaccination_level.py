@@ -177,10 +177,6 @@ def stats(args):
         path = Path(args.output)
         if path.exists() == False or path.is_file():
             output = path.open('w')
-    if args.md:
-        print('# Opracowanie na podstawie danych z https://www.gov.pl/web/szczepienia-gmin', file=output)
-        print('', file=output)
-        print('```', file=output)
 
     timestamps = get_timestamps()
     voivodeships = get_voivodeships()
@@ -202,7 +198,7 @@ def stats(args):
     for timestamp in timestamps:
         nice_timestamp = nice_date(timestamp)
         header += t_string.format(nice_timestamp)
-        plot_dates.append(nice_timestamp)
+        plot_dates.append(timestamp_to_utcdatetime(timestamp).date())
     stats_len = len(header)
     stats_lines.append(header)
     header = '     KIEDY ODPORNOSC STADNA {:.0f}%     '.format(herd_immunity)
@@ -287,6 +283,14 @@ def stats(args):
 
     #print(out, file=output)
 
+    print('# Opracowanie na podstawie danych z https://www.gov.pl/web/szczepienia-gmin', file=output)
+    print('', file=output)
+    chart_list = generate_chart('level', f'({plot_dates[-1]}) Procent zaszczepionych w Polsce', plot_data)
+    for chart in chart_list:
+        print(chart, file=output)
+    if args.md:
+        print('```', file=output)
+
     for i in range(0, len(herd_immunity_lines)):
         print(f"{desc_lines[i]}{herd_immunity_lines[i]}", file=output)
 
@@ -298,9 +302,7 @@ def stats(args):
     if args.md:
         print('```', file=output)
 
-    chart_list = generate_chart('level', f'({plot_dates[-1]}) Procent zaszczepionych w Polsce', plot_data)
-    for chart in chart_list:
-        print(chart, file=output)
+
 
 
 
@@ -469,7 +471,12 @@ def generate_chart(filename: str, decription: str, charts_data: PlotData):
 
     fig = go.Figure()
     fig.update_yaxes(tickformat="%")
-    fig.update_xaxes(dtick="D1")
+    # https://plotly.com/python/reference/#layout-xaxis-nticks
+    # If the axis `type` is "date", then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0
+    fig.update_xaxes(
+        tickformat='%Y-%m-%d',
+        tickmode='auto',
+        dtick=86400000)
     fig.update_layout(width=1500, height=1000, title=decription)
 
     idx = 0
