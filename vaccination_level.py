@@ -316,7 +316,12 @@ def stats(args):
     for i in range(0, len(herd_immunity_lines)):
         print(f"{desc_lines[i]}{herd_immunity_lines[i]}", file=output)
 
+    if args.md:
+        print('```', file=output)
     print('', file=output)
+
+    if args.md:
+        print('```', file=output)
 
     for i in range(0, len(stats_lines)):
         print(f"{desc_lines[i]}{stats_lines[i]}", file=output)
