@@ -186,7 +186,7 @@ def stats(args):
     d_len = len(nice_date(0))
     v_string = '{:' + str(v_len) + 's} | '
     t_string = '{:>' + str(d_len) + 's} | '
-    herd_string = '{:.4f}%/dzien | {:>3s} dni | {:>' + str(d_len) + 's}'
+    herd_string = t_string + '{:.4f}%/dzien | {:>3s} dni | {:>' + str(d_len) + 's}'
 
     herd_immunity_lines = []
     stats_lines = []
@@ -211,7 +211,7 @@ def stats(args):
 
     stats_len = len(header)
     stats_lines.append(header)
-    header = '     KIEDY ODPORNOSC STADNA {:.0f}%     '.format(herd_immunity)
+    header = ('{:>' + str(d_len) + 's} |     KIEDY ODPORNOSC STADNA {:.0f}%      ').format(plot_dates[-1].strftime('%Y/%m/%d'), herd_immunity)
     herd_immunity_len = len(header)
     herd_immunity_lines.append(header)
     header = ''
@@ -248,7 +248,7 @@ def stats(args):
             stats_lines[0+off] += t_string.format(master_data[idx].percent_string())
             plot_entry.y.append(master_data[idx].full_vaccinated_percent)
         daily_increase_average, herd_immunity_date, days_to_herd_immunity = when_herd_immunity(master_data[0], master_data[last_idx])
-        herd_immunity_lines[0+off] += herd_string.format(daily_increase_average, str(days_to_herd_immunity), herd_immunity_date.strftime('%Y/%m/%d'))
+        herd_immunity_lines[0+off] += herd_string.format(master_data[last_idx].percent_string(), daily_increase_average, str(days_to_herd_immunity), herd_immunity_date.strftime('%Y/%m/%d'))
         #print(out, file=output)
 
         plot_data.append(plot_entry)
@@ -274,7 +274,7 @@ def stats(args):
                 plot_entry.y.append(data[j].full_vaccinated_percent)
                 master_data[j].update(data[j].population, data[j].full_vaccinated_amount)
             daily_increase_average, herd_immunity_date, days_to_herd_immunity = when_herd_immunity(data[0], data[last_idx])
-            herd_immunity_lines[i+off] += herd_string.format(daily_increase_average, str(days_to_herd_immunity), herd_immunity_date.strftime('%Y/%m/%d'))
+            herd_immunity_lines[i+off] += herd_string.format(data[last_idx].percent_string(), daily_increase_average, str(days_to_herd_immunity), herd_immunity_date.strftime('%Y/%m/%d'))
             #print(out, file=output)
             plot_data.append(plot_entry)
 
@@ -299,7 +299,7 @@ def stats(args):
         stats_lines[-1] += t_string.format(master_data[idx].percent_string())
         plot_entry.y.append(master_data[idx].full_vaccinated_percent)
     daily_increase_average, herd_immunity_date, days_to_herd_immunity = when_herd_immunity(master_data[0], master_data[last_idx])
-    herd_immunity_lines[-1] += herd_string.format(daily_increase_average, str(days_to_herd_immunity), herd_immunity_date.strftime('%Y/%m/%d'))
+    herd_immunity_lines[-1] += herd_string.format(master_data[last_idx].percent_string(), daily_increase_average, str(days_to_herd_immunity), herd_immunity_date.strftime('%Y/%m/%d'))
 
     plot_data.insert(0, plot_entry)
 
