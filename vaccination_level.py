@@ -203,7 +203,7 @@ def stats(args):
         timestamp = timestamps[idx]
         new_date = timestamp_to_utcdatetime(timestamp).date()
         if len(plot_dates) > 0 and plot_dates[-1] == new_date:
-            skip_idx.append(idx)
+            skip_idx.append(idx-1)
             continue
         nice_timestamp = nice_date(timestamp)
         header += t_string.format(nice_timestamp)
