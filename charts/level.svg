@@ -1,17 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="main-svg" width="1500" height="1000" style="" viewBox="0 0 1500 1000">
   <rect x="0" y="0" width="1500" height="1000" style="fill: rgb(255, 255, 255); fill-opacity: 1;"/>
-  <defs id="defs-450950">
+  <defs id="defs-b1f44d">
     <g class="clips">
-      <clipPath id="clip450950xyplot" class="plotclip">
+      <clipPath id="clipb1f44dxyplot" class="plotclip">
         <rect width="1190" height="820"/>
       </clipPath>
-      <clipPath class="axesclip" id="clip450950x">
+      <clipPath class="axesclip" id="clipb1f44dx">
         <rect x="80" y="0" width="1190" height="1000"/>
       </clipPath>
-      <clipPath class="axesclip" id="clip450950y">
+      <clipPath class="axesclip" id="clipb1f44dy">
         <rect x="0" y="100" width="1500" height="820"/>
       </clipPath>
-      <clipPath class="axesclip" id="clip450950xy">
+      <clipPath class="axesclip" id="clipb1f44dxy">
         <rect x="80" y="100" width="1190" height="820"/>
       </clipPath>
     </g>
@@ -54,9 +54,9 @@
       <g class="xaxislayer-below"/>
       <g class="yaxislayer-below"/>
       <g class="overaxes-below"/>
-      <g class="plot" transform="translate(80,100)" clip-path="url(#clip450950xyplot)">
+      <g class="plot" transform="translate(80,100)" clip-path="url(#clipb1f44dxyplot)">
         <g class="scatterlayer mlayer">
-          <g class="trace scatter trace9e98c7" style="stroke-miterlimit: 2; opacity: 1;">
+          <g class="trace scatter traced41155" style="stroke-miterlimit: 2; opacity: 1;">
             <g class="fills"/>
             <g class="errorbars"/>
             <g class="lines">
@@ -93,7 +93,7 @@
             </g>
             <g class="text"/>
           </g>
-          <g class="trace scatter trace739625" style="stroke-miterlimit: 2; opacity: 1;">
+          <g class="trace scatter trace328ea5" style="stroke-miterlimit: 2; opacity: 1;">
             <g class="fills"/>
             <g class="errorbars"/>
             <g class="lines">
@@ -130,7 +130,7 @@
             </g>
             <g class="text"/>
           </g>
-          <g class="trace scatter trace1d90ff" style="stroke-miterlimit: 2; opacity: 1;">
+          <g class="trace scatter trace57e7ba" style="stroke-miterlimit: 2; opacity: 1;">
             <g class="fills"/>
             <g class="errorbars"/>
             <g class="lines">
@@ -167,7 +167,7 @@
             </g>
             <g class="text"/>
           </g>
-          <g class="trace scatter trace2e697a" style="stroke-miterlimit: 2; opacity: 1;">
+          <g class="trace scatter trace3777aa" style="stroke-miterlimit: 2; opacity: 1;">
             <g class="fills"/>
             <g class="errorbars"/>
             <g class="lines">
@@ -204,7 +204,7 @@
             </g>
             <g class="text"/>
           </g>
-          <g class="trace scatter traceabdc7f" style="stroke-miterlimit: 2; opacity: 1;">
+          <g class="trace scatter tracee64f45" style="stroke-miterlimit: 2; opacity: 1;">
             <g class="fills"/>
             <g class="errorbars"/>
             <g class="lines">
@@ -241,7 +241,7 @@
             </g>
             <g class="text"/>
           </g>
-          <g class="trace scatter trace44d344" style="stroke-miterlimit: 2; opacity: 1;">
+          <g class="trace scatter tracec86830" style="stroke-miterlimit: 2; opacity: 1;">
             <g class="fills"/>
             <g class="errorbars"/>
             <g class="lines">
@@ -278,7 +278,7 @@
             </g>
             <g class="text"/>
           </g>
-          <g class="trace scatter trace49dc74" style="stroke-miterlimit: 2; opacity: 1;">
+          <g class="trace scatter trace38883c" style="stroke-miterlimit: 2; opacity: 1;">
             <g class="fills"/>
             <g class="errorbars"/>
             <g class="lines">
@@ -315,7 +315,7 @@
             </g>
             <g class="text"/>
           </g>
-          <g class="trace scatter trace0a283a" style="stroke-miterlimit: 2; opacity: 1;">
+          <g class="trace scatter trace11ebfc" style="stroke-miterlimit: 2; opacity: 1;">
             <g class="fills"/>
             <g class="errorbars"/>
             <g class="lines">
@@ -352,7 +352,7 @@
             </g>
             <g class="text"/>
           </g>
-          <g class="trace scatter trace13e209" style="stroke-miterlimit: 2; opacity: 1;">
+          <g class="trace scatter traceb63aaa" style="stroke-miterlimit: 2; opacity: 1;">
             <g class="fills"/>
             <g class="errorbars"/>
             <g class="lines">
@@ -389,7 +389,7 @@
             </g>
             <g class="text"/>
           </g>
-          <g class="trace scatter trace6d5e53" style="stroke-miterlimit: 2; opacity: 1;">
+          <g class="trace scatter tracece0210" style="stroke-miterlimit: 2; opacity: 1;">
             <g class="fills"/>
             <g class="errorbars"/>
             <g class="lines">
@@ -426,7 +426,7 @@
             </g>
             <g class="text"/>
           </g>
-          <g class="trace scatter trace0a2c91" style="stroke-miterlimit: 2; opacity: 1;">
+          <g class="trace scatter traceed70cd" style="stroke-miterlimit: 2; opacity: 1;">
             <g class="fills"/>
             <g class="errorbars"/>
             <g class="lines">
@@ -463,7 +463,7 @@
             </g>
             <g class="text"/>
           </g>
-          <g class="trace scatter trace400d9c" style="stroke-miterlimit: 2; opacity: 1;">
+          <g class="trace scatter trace911a39" style="stroke-miterlimit: 2; opacity: 1;">
             <g class="fills"/>
             <g class="errorbars"/>
             <g class="lines">
@@ -500,7 +500,7 @@
             </g>
             <g class="text"/>
           </g>
-          <g class="trace scatter traceae1ad9" style="stroke-miterlimit: 2; opacity: 1;">
+          <g class="trace scatter trace59ad61" style="stroke-miterlimit: 2; opacity: 1;">
             <g class="fills"/>
             <g class="errorbars"/>
             <g class="lines">
@@ -537,7 +537,7 @@
             </g>
             <g class="text"/>
           </g>
-          <g class="trace scatter trace98b434" style="stroke-miterlimit: 2; opacity: 1;">
+          <g class="trace scatter tracee8bf75" style="stroke-miterlimit: 2; opacity: 1;">
             <g class="fills"/>
             <g class="errorbars"/>
             <g class="lines">
@@ -574,7 +574,7 @@
             </g>
             <g class="text"/>
           </g>
-          <g class="trace scatter tracedc4d7b" style="stroke-miterlimit: 2; opacity: 1;">
+          <g class="trace scatter trace26af7a" style="stroke-miterlimit: 2; opacity: 1;">
             <g class="fills"/>
             <g class="errorbars"/>
             <g class="lines">
@@ -611,7 +611,7 @@
             </g>
             <g class="text"/>
           </g>
-          <g class="trace scatter trace29f318" style="stroke-miterlimit: 2; opacity: 1;">
+          <g class="trace scatter trace6c7ffd" style="stroke-miterlimit: 2; opacity: 1;">
             <g class="fills"/>
             <g class="errorbars"/>
             <g class="lines">
@@ -648,7 +648,7 @@
             </g>
             <g class="text"/>
           </g>
-          <g class="trace scatter trace9263d7" style="stroke-miterlimit: 2; opacity: 1;">
+          <g class="trace scatter trace0a0a38" style="stroke-miterlimit: 2; opacity: 1;">
             <g class="fills"/>
             <g class="errorbars"/>
             <g class="lines">
@@ -737,9 +737,9 @@
   <g class="treemaplayer"/>
   <g class="sunburstlayer"/>
   <g class="glimages"/>
-  <defs id="topdefs-450950">
+  <defs id="topdefs-b1f44d">
     <g class="clips"/>
-    <clipPath id="legend450950">
+    <clipPath id="legendb1f44d">
       <rect width="194" height="333" x="0" y="0"/>
     </clipPath>
   </defs>
@@ -750,7 +750,7 @@
   <g class="infolayer">
     <g class="legend" pointer-events="all" transform="translate(1293.8,100)">
       <rect class="bg" shape-rendering="crispEdges" style="stroke: rgb(68, 68, 68); stroke-opacity: 1; fill: rgb(255, 255, 255); fill-opacity: 1; stroke-width: 0px;" width="194" height="333" x="0" y="0"/>
-      <g class="scrollbox" transform="" clip-path="url(#legend450950)">
+      <g class="scrollbox" transform="" clip-path="url(#legendb1f44d)">
         <g class="groups">
           <g class="traces" transform="translate(0,14.5)" style="opacity: 1;">
             <text class="legendtext" text-anchor="start" x="40" y="4.680000000000001" style="font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 12px; fill: rgb(42, 63, 95); fill-opacity: 1; white-space: pre;">POLSKA</text>
