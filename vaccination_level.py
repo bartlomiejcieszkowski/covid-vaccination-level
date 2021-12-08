@@ -326,6 +326,10 @@ def stats(args):
     for i in range(0, len(stats_lines)):
         print(f"{desc_lines[i]}{stats_lines[i]}", file=output)
 
+
+    print('', file=output)
+    print(f'zaszczepieni/populacja:\n{master_data[j].full_vaccinated_amount}/{master_data[j].population}', file=output)
+
     if args.md:
         print('```', file=output)
 
@@ -335,6 +339,8 @@ def stats(args):
 
     if output != sys.stdout:
         output.close()
+        
+    
     return 0
 
 
